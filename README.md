@@ -1,147 +1,181 @@
 # Evil Overlord Inc. 🏰
 
-> *World domination is easy. Managing incompetent employees is the real challenge.*
+> *World domination is easy. Managing your staff is the real challenge.*
 
-**Evil Overlord Inc.** is a comedic, AI-powered fantasy management simulator developed as a solo project for **CPSC 481: Artificial Intelligence**. Players take the role of an aspiring evil overlord attempting ridiculous missions with limited resources and a deeply unreliable staff.
+**Evil Overlord Inc.** is a comedic, AI-powered fantasy strategy and management RPG being developed as a **solo CPSC 481: Artificial Intelligence project**. The player is an ordinary person accidentally summoned as the successor to a missing Dark Lord. They inherit a failing villainous organization and must manage unreliable but talented advisors, scarce resources, and increasingly ridiculous missions.
 
-The project combines traditional AI algorithms with generative AI. A mission planner searches for viable strategies, a goblin merchant makes probabilistic pricing decisions, a wizard offers occasionally questionable advice, and a procrastinating henchman generates excuses instead of doing his job.
+**Status:** In development. This README distinguishes the existing visual prototype from planned gameplay and AI systems.
 
-> **Project status:** In development. The features and commands below describe the planned application; they may not work until the corresponding components are implemented.
+## Story and Gameplay
 
-## Gameplay
+A botched succession ritual makes the player the new Evil Overlord. The former Dark Lord has disappeared, and the truth remains a mystery. The player can choose how to rule, interact with advisors, acquire equipment, investigate clues, and complete missions while their decisions affect resources and faction relationships.
 
-The player selects a mission, consults advisors, purchases supplies, assigns tasks, and chooses how to execute a plan. Actions affect a shared game state that tracks resources, inventory, mission progress, and outcomes.
+The planned gameplay loop is:
 
-Example missions may include:
-- Stealing the royal crown.
-- Conquering the village bakery.
-- Acquiring a suspiciously powerful magical artifact.
+1. Explore headquarters and speak with advisors.
+2. Choose a mission and gather information.
+3. Compare AI-generated plans and purchase equipment.
+4. Execute validated actions and deal with outcomes.
+5. Update inventory, gold, reputation, and story progression.
 
-The goal is a **turn-based hybrid simulator** with a simple browser interface, rather than a real-time game.
+The **minimum playable mission** is **“A Crown for a Clown”**, a royal-crown heist with multiple possible approaches. Additional missions are stretch goals.
 
-## AI Systems
+## Main Characters
 
-| Character / System | Planned AI approach | Role |
+| Character | Position | Personality and gameplay role | Planned AI |
+| --- | --- | --- | --- |
+| **Mordecai** | Undead military strategist | Disciplined, formal, obsessive about order, and burdened by unreliable visions of possible futures; advises on mission strategies | BFS, DFS, uniform-cost search, and A* mission planning |
+| **Gribble** | Goblin merchant and quartermaster | Clever, greedy, scheming, and potentially loyal; sells supplies and negotiates deals | Bayesian negotiation and expected-utility pricing |
+| **Archibald** | Elderly human wizard | Brilliant, overconfident, and accident-prone; explains lore and offers risky magical assistance | LLM dialogue with retrieval-augmented generation (RAG); rule-based spell outcomes |
+| **Veyra** | Elven scout and field operative | Sarcastic, rebellious, cynical, and highly capable **but prone to procrastination**; delays assignments, makes excuses, and sometimes leaves reconnaissance until the last moment | Contextual LLM dialogue and explicit, testable task-delay/reconnaissance rules |
+
+**Veyra's procrastination is a character trait, not a lack of skill.** She is an excellent scout and infiltrator when she commits to a task. Her tendency to put work off creates management challenges: the player may need to follow up, change priorities, or work around delays. Her drinking is a separate personal struggle, not a gameplay power-up or the sole explanation for her behavior.
+
+## AI Systems and Original Contributions
+
+### 1. Mordecai — Mission Planning (Primary Contribution)
+
+Missions are represented as searchable state spaces. States describe relevant facts such as player location, inventory, mission flags, available gold, and guard status. Actions have explicit preconditions, effects, and costs.
+
+Planned algorithms:
+- **Breadth-first search (BFS):** baseline for minimum-action plans in unweighted graphs.
+- **Depth-first search (DFS):** baseline search that does not guarantee optimal plans.
+- **Uniform-cost search (UCS):** finds minimum-cost plans under nonnegative action costs.
+- **A* search:** uses accumulated cost and a heuristic estimate of remaining cost.
+
+The project will implement its own mission representation, legal transitions, goal tests, weighted cost model, and A* heuristic. A possible objective combines gold, time, and modeled risk using configurable weights. The heuristic must be tested for correctness and admissibility when claiming optimal solutions.
+
+### 2. Gribble — Bayesian Merchant
+
+Gribble estimates whether a proposed price is likely to be accepted based on negotiation context, then selects offers or counteroffers using expected utility. His strategy will be compared with fixed-price and simple rule-based baselines. All purchases require validated player confirmation.
+
+### 3. Archibald — Lore Retrieval and Magical Risk
+
+Archibald can answer questions about the fictional world using an existing LLM. A local lore knowledge base supports retrieval-augmented generation (RAG), allowing grounded responses to be compared with responses generated without retrieval. Magical mishaps use explicit, reproducible game rules rather than unconstrained LLM text.
+
+### 4. Veyra — Reconnaissance and Procrastination
+
+Veyra provides scouting intelligence, identifies potential routes, and influences what information is available to the mission planner. Her tendency to postpone work is represented through explicit assignment status and delay rules. Dialogue can supply humorous excuses, but an LLM cannot independently alter mission state, timers, or rewards.
+
+### Safe Integration Rule
+
+**LLM-generated dialogue never directly changes game state.** The Python game engine validates purchases, mission progress, assignments, inventory changes, and outcomes.
+
+## User Interface
+
+The game uses **Python and Streamlit** with a stylized cartoon-fantasy, visual-novel-inspired presentation:
+
+- Illustrated location backgrounds and transparent character sprites.
+- Character dialogue with suggested topics and planned free-text input.
+- Headquarters navigation, inventory, mission planning, and faction reputation views.
+- A planned parchment-style dialogue overlay and compact game controls.
+
+The interface will separate **Conversation Mode** (characters and story) from **Management Mode** (missions, resources, and planning).
+
+## Performance Evaluation
+
+| Experiment | Comparison | Measurements |
 | --- | --- | --- |
-| **Evil Overlord Planner** | State-space search; breadth-first search (BFS) and depth-first search (DFS) | Finds sequences of valid actions to complete missions. |
-| **Goblin Merchant** | Bayesian inference and expected utility | Estimates purchase acceptance and chooses prices. |
-| **Confidently Incorrect Wizard** | Large language model (LLM) and retrieval-augmented generation (RAG) | Answers questions about fictional lore; enables comparison of grounded and ungrounded answers. |
-| **Procrastinating Henchman** | LLM prompting and rule-based task outcomes | Generates excuses while the game engine determines delays and outcomes. |
+| Mission planning | BFS vs. DFS vs. UCS vs. A* | Valid solutions, nodes expanded, runtime, plan length, total cost, and risk |
+| Negotiation | Bayesian strategy vs. fixed-price and rule-based strategies | Acceptance rate, average profit, player spending, negotiation rounds |
+| Lore answers | LLM without retrieval vs. LLM with RAG | Factual accuracy against an authored answer key, unsupported claims, latency |
+| Task assignment (supporting) | Veyra assignment scenarios | Correct status transitions and reproducible delay behavior |
 
-### Original AI Contributions
+Experiments will use documented starting conditions and repeatable test cases. Results will be reported rather than assumed in advance.
 
-The project is intended to implement its own:
+## Technologies and Data
 
-- Mission states, action preconditions, transitions, and goal tests.
-- BFS and DFS planning logic and a plan-scoring function.
-- Bayesian merchant model and pricing strategy.
-- Fictional lore collection, retrieval workflow, and evaluation questions.
-- Shared simulation rules that connect advisor decisions to gameplay.
+- **Python:** game state, rules, search, probability models, and tests.
+- **Streamlit:** interactive browser interface.
+- **Pillow:** scene composition and sprite placement.
+- **JSON / CSV:** authored missions, fictional lore, negotiation scenarios, and evaluation results.
+- **Optional existing LLM API:** character dialogue and Archibald's RAG responses; provider not finalized.
+- **pytest / plotting tools:** automated correctness tests and evaluation figures.
 
-Existing libraries and pretrained LLMs may be used for the interface, model access, and supporting utilities.
+No external training dataset is required. Planned local data includes mission/action definitions, merchant probabilities, approximately 20–30 lore entries, and a curated set of lore evaluation questions. These are targets, not completed dataset counts.
 
-## Technologies
-
-- **Python** — simulation logic and AI algorithms.
-- **Streamlit** — browser-based user interface.
-- **JSON / CSV** — mission data, probability tables, lore, and evaluation scenarios.
-- **Pretrained LLM** — wizard and henchman dialogue (provider/model to be selected).
-- **Matplotlib** — optional charts for evaluation results.
-
-## Getting Started
-
-These are the **planned** local setup steps once the application and dependency files are available.
-
-### Prerequisites
-
-- Python 3.10 or newer (subject to final dependency compatibility).
-- Git.
-- Access to a supported LLM API for dialogue features.
-
-### Installation
-
-```bash
-git clone https://github.com/YOUR_USERNAME/evil-overlord-inc.git
-cd evil-overlord-inc
-python -m venv .venv
-```
-
-Activate the virtual environment:
-
-**Windows (PowerShell):**
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-**macOS / Linux:**
-```bash
-source .venv/bin/activate
-```
-
-Once `requirements.txt` has been created:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Run the Application
-
-Once `app.py` is implemented:
-
-```bash
-streamlit run app.py
-```
-
-Streamlit will display a local browser URL, typically `http://localhost:8501`.
-
-LLM-backed features will require provider-specific configuration. **Do not commit API keys or `.env` files to Git.**
-
-## Planned Project Structure
+## Repository Structure
 
 ```text
-evil-overlord-inc/
-├── app.py                   # Streamlit interface
-├── game/
-│   ├── state.py             # Shared game state
-│   ├── actions.py           # Action rules and transitions
-│   ├── missions.py          # Mission definitions
-│   └── simulator.py         # Turn execution
+Evil-Overlord-Inc/
 ├── ai/
-│   ├── search.py            # BFS and DFS
-│   ├── planner.py           # Plan evaluation
-│   ├── merchant.py          # Bayesian pricing
-│   ├── wizard.py            # LLM and lore retrieval
-│   └── henchman.py          # Excuse generation
+│   ├── __init__.py
+│   ├── henchman.py       # Existing module; Veyra task-delay logic may be integrated here
+│   ├── merchant.py
+│   ├── planner.py
+│   ├── search.py
+│   └── wizard.py
+├── assets/
+│   ├── backgrounds/
+│   │   └── wizard_tower.png
+│   ├── characters/
+│   │   ├── archibald/
+│   │   │   └── neutral.png
+│   │   ├── gribble/
+│   │   ├── mordecai/
+│   │   └── veyra/
+│   └── ui/
 ├── data/
-│   └── lore.json            # Fictional world knowledge
+├── dialogue/
+├── docs/
+│   ├── CHARACTERS.md
+│   ├── DEVELOPMENT_PLAN.md
+│   └── GAME_DESIGN.md
 ├── evaluation/
-│   ├── test_search.py
-│   ├── test_merchant.py
-│   └── test_wizard.py
+│   └── results/
+├── game/
+│   ├── __init__.py
+│   ├── actions.py
+│   ├── missions.py
+│   ├── simulator.py
+│   └── state.py
+├── tests/
+├── ui/
+│   └── scenes.py
+├── app.py
+├── scene_demo.py
 ├── requirements.txt
 └── README.md
 ```
 
-*This structure is a design target, not a claim that all files currently exist.*
+This reflects the reported repository layout, not a claim that all modules contain finished implementations. `ai/henchman.py` is an existing filename and may be adapted for Veyra rather than creating a separate henchman character.
 
-## Datasets
+## Getting Started
 
-No external training dataset is required. The project will use small, self-created datasets for mission rules, merchant probability tables, fictional lore, and evaluation questions. The LLM components will use an existing pretrained model rather than training a new one.
+From the project root, create or activate a Python virtual environment and install dependencies:
 
-## Evaluation Plan
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-| Component | Comparison | Metrics |
-| --- | --- | --- |
-| Mission planner | BFS vs. DFS (and potentially a cost-aware search baseline) | Solved missions, nodes expanded, plan length, resource cost, runtime |
-| Merchant | Bayesian pricing vs. fixed-price strategy | Offer acceptance, average profit, pricing outcomes |
-| Wizard | LLM without retrieval vs. LLM with RAG | Factual accuracy, unsupported claims, abstention, response time |
+Run the **existing Archibald visual prototype**:
 
-Evaluation scenarios will use consistent starting conditions. Wizard responses will be checked against a predefined fictional lore answer key.
+```powershell
+python -m streamlit run scene_demo.py
+```
+
+Run the main application entry point (its functionality depends on development progress):
+
+```powershell
+python -m streamlit run app.py
+```
+
+LLM functionality may require provider credentials. Store secrets outside the repository (for example, in ignored environment files), and never commit API keys.
+
+## Development Roadmap
+
+1. **Visual foundation:** Archibald sprite, Wizard's Tower background, and basic dialogue prototype — working.
+2. **Mission state model:** define crown-heist states, actions, preconditions, and transitions.
+3. **Core search:** implement BFS, DFS, UCS, and A* with a custom heuristic.
+4. **Evaluation:** benchmark planning methods with reproducible scenarios.
+5. **Character AI:** integrate Gribble's negotiation, Archibald's lore retrieval, and Veyra's assignment behavior.
+6. **Playable integration:** complete one branching mission and connect conversations, inventory, reputation, and outcomes.
+7. **Final polish:** tests, presentation, and written report.
 
 ## Academic Context
 
-This project is being developed for **CPSC 481: Artificial Intelligence** as an individual course project. It explores state-space search, probabilistic reasoning, generative AI, retrieval-augmented generation, and AI evaluation through a comedic interactive simulation.
+Developed individually by **Brendon Cozzens** for **CPSC 481: Artificial Intelligence** at California State University, Fullerton. The project's central academic contribution is an original, measurable AI planning problem within a novel fantasy management game, supported by probabilistic reasoning and LLM-based interaction.
 
-## License
-
-No license has been selected yet. Until one is added, the repository should not be assumed to grant reuse permissions.
+For ongoing design decisions and planned implementation details, see `docs/GAME_DESIGN.md`, `docs/CHARACTERS.md`, and `docs/DEVELOPMENT_PLAN.md`.
