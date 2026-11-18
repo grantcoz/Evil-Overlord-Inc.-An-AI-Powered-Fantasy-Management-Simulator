@@ -1,4 +1,6 @@
+"""Immutable, hashable mission state for graph search."""
 from dataclasses import dataclass
+
 
 @dataclass(frozen=True)
 class GameState:
