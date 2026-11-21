@@ -117,3 +117,30 @@ When a design decision changes:
 5. Commit the updated docs with the relevant code, if any.
 
 The repository files, not ChatGPT memory alone, should be the authoritative reference in later sessions.
+
+## Development update — 2026-11-21: hybrid dialogue and Part I vertical slice
+
+**Confirmed direction:** A comedic, choice-reactive city adventure with authored dialogue options plus free-form input. *A Crown for a Clown* is the Part I main arc, culminating in a crown heist with multiple combinable solutions.
+
+**Architecture (proposed):**
+1. A Streamlit scene displays current location, NPC, authored dialogue options, and a free-form text field.
+2. Both input forms feed one dialogue controller. Authored options carry known intent metadata; free-form input is interpreted into a restricted structured intent with targets/arguments.
+3. Validate all intents against a registry of available game actions and state preconditions. Ambiguous or unsupported intents request clarification or produce an in-character refusal.
+4. Apply consequences only through deterministic game functions; record durable facts separately from conversational context.
+5. Produce NPC dialogue from verified outcomes, personality, relevant memories, and retrieved lore where applicable. LLM output cannot authorize or apply mutations.
+6. Record debug traces for the AI Inspector: input, intent, confidence/uncertainty where available, proposed action, validation result, timing, and actual state delta. Do not expose private prompts or secrets.
+
+**Proposed modules:** `dialogue/controller.py`, `dialogue/intents.py`, `dialogue/memory.py`, `dialogue/prompts.py`; location/event definitions in `game/` and `data/`. These paths are plans, not claims that files exist.
+
+**Implementation order:**
+1. Define a small city location graph and reusable encounter/event schema.
+2. Define heist states, route prerequisites, and validated actions without losing existing crown-heist tests.
+3. Implement one Gribble conversation with suggested choices, free-form intent parsing, purchase validation, and character response.
+4. Add companion personalities and durable relationship events; preserve Veyra's competence and procrastination as separate traits.
+5. Implement BFS, DFS, UCS, and A* over the expanded mission state space and record repeatable performance metrics.
+6. Integrate one consequential random event (e.g. tavern brawl) that changes available heist plans.
+7. Build the AI Inspector and presentation sequence; benchmark planning, negotiation, RAG, and intent routing.
+
+**Tests:** Suggested and free-form inputs resolve to equivalent intents when semantically equivalent; invalid actions do not change state; successful actions change state exactly once; memory distinguishes facts from generated dialogue; event outcomes and probabilistic mechanics are reproducible with a seed.
+
+**Scope safeguard:** Prioritize one polished, testable city-to-heist vertical slice over a large but shallow world. Parts II and III are outside the current implementation scope.

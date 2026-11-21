@@ -117,3 +117,23 @@ See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
 | 2026-11-06 | Different factions have different opinions of player (C) | Confirmed |
 | 2026-11-06 | Original Dark Lord disappearance: genuine mystery (C) | Confirmed |
 | 2026-11-06 | Maintain versioned project design/reference documents | Confirmed |
+
+## Design update — 2026-11-21: player agency and hybrid dialogue
+
+**Confirmed:** Hybrid dialogue combines authored, context-aware suggested responses with optional free-form player input. Both use the same intent interpretation and validated action pipeline. The player may improvise; an LLM never directly mutates game state or declares an unsupported success.
+
+**Confirmed:** The game takes inspiration from Baldur's Gate 3's meaningful choices, reactive companions, and creative problem-solving, but has a lighter, funnier tone. It is not intended to reproduce BG3's scale or combat. Comedy should arise from character contrasts, institutional absurdity, and consequences while allowing sincere moments.
+
+**Confirmed:** Part I focuses on *A Crown for a Clown* as a multi-stage arc; the heist is its climax, with multiple combinable approaches (stealth, bribery, magic, social access, distractions) and room for fail-forward outcomes. Parts II and III retain the proposed titles and unresolved plots above.
+
+**Confirmed direction:** Explore city districts and sublocations including the main square, downtown, mages' quarter, criminal hubs, taverns, and hangouts. Location-based random encounters (such as a bar fight) may affect resources, contacts, reputation, and heist opportunities.
+
+**Proposed implementation:** District map with explorable sublocations; initially a compact number of playable scenes. Use a shared dialogue controller to map both suggested options and free text into structured intents, validate preconditions, apply engine-owned consequences, and generate a character-specific response. Keep durable game facts distinct from conversational memory.
+
+**Proposed AI demonstration:** An optional AI Inspector shows search algorithm routes and benchmarks (BFS/DFS/UCS/A*), Gribble's Bayesian offer reasoning, Archibald's retrieved lore, and dialogue intent/validation traces. Veyra's scouting and procrastination influence mission availability via explicit rules, not an unimplemented ML claim.
+
+**Undecided:** Exact districts and names, full event catalog, final heist routes/balancing, dialogue model/provider, and precise character relationship mechanics.
+
+| 2026-11-21 | Hybrid dialogue: suggested choices + free-form input with validated consequences | Confirmed |
+| 2026-11-21 | BG3-inspired agency and reactive characters with a lighter comedic tone | Confirmed |
+| 2026-11-21 | Crown heist as Part I arc; explorable city and consequential random events | Confirmed direction |
