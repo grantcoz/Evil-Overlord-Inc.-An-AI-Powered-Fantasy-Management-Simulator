@@ -65,3 +65,19 @@
 3. Lore retrieval can provide correct facts even when Archibald adds unreliable commentary.
 4. Do not use OCD or alcoholism solely as punchlines.
 5. Do not invent permanent backstory revelations without marking them as proposals or recording a deliberate design decision.
+
+## Character and dialogue update — 2026-11-21
+
+**Confirmed:** Companions should feel reactive, distinctive, and capable of sincere development despite the game's light comedic tone. Inspired by BG3's companion reactivity, not its narrative or character content.
+
+**Confirmed:** Veyra is highly capable but procrastinates on assignments, delays reconnaissance, and invents excuses; this is separate from her difficulty with alcohol. Do not make either trait her entire personality.
+
+**Proposed hybrid dialogue rules:** Each character has authored topic suggestions plus free-form dialogue interpreted by a shared controller. Responses use character voice, verified world facts, relationship events, and recent conversational context. Character disagreement and humor should reflect established personalities. NPCs can lie, joke, and be wrong; the engine alone determines actual consequences.
+
+**Proposed character-specific examples:**
+- Mordecai: asks for preparation, presents alternatives and uncertainty, reacts to reckless improvisation.
+- Gribble: negotiates opportunistically and remembers verified deals and betrayals.
+- Archibald: supplies grounded magical lore with a distinct layer of overconfident commentary.
+- Veyra: offers practical scouting insight, resists micromanagement, and may delay assignments.
+
+**Undecided:** Relationship thresholds, personal quest beats, exact dialogue examples, and NPC-specific unlock conditions.
